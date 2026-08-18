@@ -182,19 +182,17 @@ router.get('/customers', async (req: Request, res: Response) => {
         skip, 
         take: Number(pageSize), 
         include: { 
-          _count: { select: { contacts: true, opportunities: true } }, 
-          assignee: { select: { id: true, name: true, email: true } },
-          visitRecords: { select: { id: true, visitTime: true, photos: true, content: true, location: true, address: true, latitude: true, longitude: true }, orderBy: { visitTime: 'desc' } } 
+          _count: { select: { contacts: true, opportunities: true } }
         }, 
         orderBy: { updatedAt: 'desc' }
       }),
       prisma.customer.count({ where }),
     ]);
 
-    // 映射 assignee.name 为 assigneeName
+    // assigneeId 是纯字符串，无外键关系，直接映射
     const customersWithAssignee = (customers as any).map((c: any) => ({
       ...c,
-      assigneeName: c.assignee?.name || null,
+      assigneeName: c.assigneeId || null,
     }));
 
     successWithPagination(res, customersWithAssignee, { page: Number(page), pageSize: Number(pageSize), total });

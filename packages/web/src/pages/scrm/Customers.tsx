@@ -22,9 +22,22 @@ export default function Customers() {
   const load = async () => {
     setLoading(true);
     try {
+      const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
+      console.log('🔑 Token:', token ? 'exists (' + token.substring(0, 20) + '...)' : 'MISSING');
       const res: any = await scrmApi.getCustomers();
-      if (res.code === 0) setCustomers(res.data || []);
-    } catch {} finally { setLoading(false); }
+      console.log(' API Response:', JSON.stringify(res).substring(0, 300));
+      if (res.code === 0) {
+        const list = res.data || [];
+        console.log('✅ Customers loaded:', list.length);
+        setCustomers(list);
+      } else {
+        console.error('❌ API error:', res.code, res.message);
+        message.error(res.message || '加载客户失败');
+      }
+    } catch (err: any) {
+      console.error('❌ Load customers error:', err?.status, err?.message, err);
+      message.error('加载客户失败: ' + (err?.message || '网络错误'));
+    } finally { setLoading(false); }
   };
 
   const handleCreate = async (values: any) => {
