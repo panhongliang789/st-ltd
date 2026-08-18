@@ -224,9 +224,11 @@ export default function Opportunities() {
       width: 120,
       render: (_: any, record: any) => {
         const idx = getStageIndex(record.stage);
+        // 商机任务只算3项（项目发布/对接/落地），电话联络和客户拜访属于客户管理
+        const taskDone = taskOrder.filter(t => isTaskDone(record, t)).length;
         return (
           <span style={{ fontSize: 12, color: '#888' }}>
-            {idx + 1} / {stageOrder.length}
+            {taskDone} / {taskOrder.length}
           </span>
         );
       },
