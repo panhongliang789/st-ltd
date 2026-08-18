@@ -8,9 +8,9 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// 请求拦截器 - 自动附加 Token
+// 请求拦截器 - 自动附加 Token（兼容 adminToken 和 token）
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
