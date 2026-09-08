@@ -1,0 +1,30 @@
+# Fly.io 部署配置 - ST-LTD API 服务
+# 部署前需要：flyctl login && flyctl launch
+
+app = "st-ltd-api"
+primary_region = "sha"  # 新加坡（亚洲用户延迟低，也可改 hkg 香港）
+
+[build]
+dockerfile = "Dockerfile"
+
+[env]
+PORT = "4000"
+NODE_ENV = "production"
+
+# 健康检查 - 用于自动重启
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  path = "/api/health"
+  protocol = "http"
+  timeout = "5s"
+
+# 自动停止备用实例节省费用（保留 1 个活跃实例，免费额度内）
+[[scale]]
+  type = "count"
+  minimum = 1
+  maximum = 2
+
+# Postgres 数据库（首次部署后用 flyctl postgres create 创建）
+# 创建后通过 flyctl postgres attach st-ltd-api-db 将 DATABASE_URL 注入环境变量
